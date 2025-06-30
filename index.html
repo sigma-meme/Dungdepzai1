@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>nói nghe cái này nè!!!</title>
+  <title>nói nhỏ nhỏ nhẹ!!!</title>
   <style>
     /* === PHẦN NHẬP TÊN === */
     #name-screen {
@@ -39,7 +39,7 @@
     /* === PHẦN CHÍNH === */
     #game-screen {
       display: none;
-      max-width: 500px;
+      max-width: 600px;
       margin: 0 auto;
       padding: 20px;
       opacity: 0;
@@ -54,10 +54,6 @@
       margin: 20px auto;
       display: block;
       transition: transform 0.3s;
-    }
-    
-    #meme:hover {
-      transform: scale(1.02);
     }
     
     .question {
@@ -116,13 +112,19 @@
       padding: 20px;
       margin-top: 30px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      display: none;
+      max-height: 400px;
+      overflow-y: auto;
     }
     
     #results h2 {
       color: #4CAF50;
       text-align: center;
       margin-top: 0;
+      position: sticky;
+      top: 0;
+      background: white;
+      padding: 10px 0;
+      z-index: 1;
     }
     
     table {
@@ -137,7 +139,14 @@
     }
     
     th {
+      position: sticky;
+      top: 50px;
       background: #f9f9f9;
+      z-index: 1;
+    }
+    
+    tr:hover {
+      background: #f5f5f5;
     }
     
     /* === HIỆU ỨNG === */
@@ -166,14 +175,33 @@
       opacity: 1 !important;
       transform: none !important;
     }
+    
+    /* === SCROLLBAR === */
+    #results::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    #results::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    #results::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 10px;
+    }
+    
+    #results::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
   </style>
 </head>
 <body>
   <!-- MÀN HÌNH NHẬP TÊN -->
   <div id="name-screen">
     <div class="name-card">
-      <h1>Nhập tên của mày!!</h1>
-      <input type="text" id="name-input" placeholder="Tên của bạn...">
+      <h1>ghi tên m vào đây!!!</h1>
+      <input type="text" id="name-input" placeholder="Tên của bạn..." autocomplete="off">
       <button id="start-btn" style="
         background: linear-gradient(to right, #4CAF50, #2E8B57);
         color: white;
@@ -200,13 +228,16 @@
     
     <div class="final-message" id="final-message"></div>
     
+    <!-- BẢNG KẾT QUẢ -->
     <div id="results">
-      <h2>Kết quả bình chọn</h2>
+      <h2>📊 Kết quả bình chọn</h2>
       <table>
         <thead>
           <tr>
+            <th>STT</th>
             <th>Tên</th>
             <th>Đáp án</th>
+            <th>Thời gian</th>
           </tr>
         </thead>
         <tbody id="results-body">
@@ -232,7 +263,13 @@
     ];
     
     // Lưu trữ kết quả
-    let allResults = JSON.parse(localStorage.getItem('dungPoll')) || [];
+    let allResults = JSON.parse(localStorage.getItem('dungPollResults')) || [];
+
+    // ===== KHỞI TẠO =====
+    function init() {
+      renderResults();
+      document.getElementById('name-input').focus();
+    }
 
     // ===== CHẶN THOÁT TRANG =====
     function blockExit() {
@@ -267,6 +304,11 @@
           setTimeout(() => {
             document.getElementById('game-screen').style.opacity = '1';
             blockExit(); // Kích hoạt chặn thoát trang
+            
+            // Hiển thị kết quả nếu có
+            if (allResults.length > 0) {
+              document.getElementById('results').style.display = 'block';
+            }
           }, 50);
         }, 600);
       } else {
@@ -289,7 +331,7 @@
       setTimeout(() => document.getElementById('meme').classList.remove('shake'), 500);
       
       // Thay đổi text nút KHÔNG
-      const texts = ["Chắc không?", "M nói lại xem nào", "ngầu r đấy", "Chắc chưa?", "Lần cuối!"];
+      const texts = ["Chắc không?", "cho nói lại", "ngầu r đó", "Chắc chưa?", "sự thật đi"];
       this.textContent = texts[Math.min(noCount-1, texts.length-1)] || "KHÔNG";
       
       // Phóng to nút CÓ và đẩy nút KHÔNG
@@ -309,12 +351,15 @@
 
     document.getElementById('yesBtn').addEventListener('click', function() {
       // Lưu kết quả
-      allResults.push({
+      const newResult = {
+        id: Date.now(),
         name: userName,
         answer: "CÓ",
-        timestamp: new Date().toLocaleString()
-      });
-      localStorage.setItem('dungPoll', JSON.stringify(allResults));
+        timestamp: new Date().toLocaleString('vi-VN')
+      };
+      
+      allResults.unshift(newResult); // Thêm vào đầu mảng
+      localStorage.setItem('dungPollResults', JSON.stringify(allResults));
       
       // Hiển thị kết quả
       renderResults();
@@ -322,7 +367,7 @@
       
       // Hiển thị thông báo
       document.getElementById('final-message').textContent = 
-        `:))${userName} đã công nhận sự thật! 💚`;
+        `Cảm ơn ${userName} đã công nhận sự thật! 💚`;
       document.getElementById('final-message').classList.add('show');
       
       // Ẩn các nút
@@ -337,24 +382,20 @@
       const tbody = document.getElementById('results-body');
       tbody.innerHTML = '';
       
-      allResults.forEach(result => {
+      allResults.forEach((result, index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
+          <td>${index + 1}</td>
           <td>${result.name}</td>
           <td>${result.answer}</td>
+          <td>${result.timestamp}</td>
         `;
         tbody.appendChild(row);
       });
     }
 
-    // ===== KHỞI TẠO =====
-    // Hiển thị kết quả cũ nếu có
-    if (allResults.length > 0) {
-      renderResults();
-    }
-    
-    // Focus vào ô nhập tên
-    document.getElementById('name-input').focus();
+    // ===== KHỞI CHẠY =====
+    init();
   </script>
 </body>
 </html>
