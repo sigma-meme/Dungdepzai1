@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>nói nhỏ nhỏ nhẹ!!!</title>
+  <title>lần này là nhắc nhỏ nhỏ nhẹ!!!</title>
   <style>
     /* === PHẦN NHẬP TÊN === */
     #name-screen {
@@ -106,47 +106,44 @@
     }
     
     /* === KẾT QUẢ === */
+    #results-section {
+      display: none;
+      margin-top: 40px;
+      animation: fadeIn 1s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
     #results {
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      margin-top: 30px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      max-height: 400px;
-      overflow-y: auto;
-    }
-    
-    #results h2 {
-      color: #4CAF50;
-      text-align: center;
-      margin-top: 0;
-      position: sticky;
-      top: 0;
-      background: white;
-      padding: 10px 0;
-      z-index: 1;
-    }
-    
-    table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      overflow: hidden;
     }
     
-    th, td {
+    #results th {
+      background: #4CAF50;
+      color: white;
       padding: 12px;
       text-align: left;
+    }
+    
+    #results td {
+      padding: 12px;
       border-bottom: 1px solid #eee;
     }
     
-    th {
-      position: sticky;
-      top: 50px;
+    #results tr:nth-child(even) {
       background: #f9f9f9;
-      z-index: 1;
     }
     
-    tr:hover {
-      background: #f5f5f5;
+    #results tr:hover {
+      background: #f1f1f1;
     }
     
     /* === HIỆU ỨNG === */
@@ -175,33 +172,14 @@
       opacity: 1 !important;
       transform: none !important;
     }
-    
-    /* === SCROLLBAR === */
-    #results::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    #results::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-    
-    #results::-webkit-scrollbar-thumb {
-      background: #888;
-      border-radius: 10px;
-    }
-    
-    #results::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
   </style>
 </head>
 <body>
   <!-- MÀN HÌNH NHẬP TÊN -->
   <div id="name-screen">
     <div class="name-card">
-      <h1>ghi tên m vào đây!!!</h1>
-      <input type="text" id="name-input" placeholder="Tên của bạn..." autocomplete="off">
+      <h1>ghi tên mày vào đây !!</h1>
+      <input type="text" id="name-input" placeholder="Tên của bạn...">
       <button id="start-btn" style="
         background: linear-gradient(to right, #4CAF50, #2E8B57);
         color: white;
@@ -228,10 +206,10 @@
     
     <div class="final-message" id="final-message"></div>
     
-    <!-- BẢNG KẾT QUẢ -->
-    <div id="results">
-      <h2>📊 Kết quả bình chọn</h2>
-      <table>
+    <!-- BẢNG KẾT QUẢ HIỆN TRÊN CÙNG TRANG -->
+    <div id="results-section">
+      <h2 style="text-align: center; color: #4CAF50;">📊 Kết quả bình chọn</h2>
+      <table id="results">
         <thead>
           <tr>
             <th>STT</th>
@@ -280,13 +258,6 @@
           return "M PHẢI bấm nút CÓ mới thoát được!";
         }
       });
-      
-      // Chặn phím tắt
-      document.addEventListener('keydown', (e) => {
-        if (!allowedToExit && (e.ctrlKey || e.metaKey) && e.key === 'r') {
-          e.preventDefault();
-        }
-      });
     }
 
     // ===== XỬ LÝ NHẬP TÊN =====
@@ -304,11 +275,6 @@
           setTimeout(() => {
             document.getElementById('game-screen').style.opacity = '1';
             blockExit(); // Kích hoạt chặn thoát trang
-            
-            // Hiển thị kết quả nếu có
-            if (allResults.length > 0) {
-              document.getElementById('results').style.display = 'block';
-            }
           }, 50);
         }, 600);
       } else {
@@ -331,7 +297,7 @@
       setTimeout(() => document.getElementById('meme').classList.remove('shake'), 500);
       
       // Thay đổi text nút KHÔNG
-      const texts = ["Chắc không?", "cho nói lại", "ngầu r đó", "Chắc chưa?", "sự thật đi"];
+      const texts = ["Chắc không?", "t cho m nói lại đấy", "Ngầu r đó", "Chắc chưa?", "nói thật đi"];
       this.textContent = texts[Math.min(noCount-1, texts.length-1)] || "KHÔNG";
       
       // Phóng to nút CÓ và đẩy nút KHÔNG
@@ -361,10 +327,6 @@
       allResults.unshift(newResult); // Thêm vào đầu mảng
       localStorage.setItem('dungPollResults', JSON.stringify(allResults));
       
-      // Hiển thị kết quả
-      renderResults();
-      document.getElementById('results').style.display = 'block';
-      
       // Hiển thị thông báo
       document.getElementById('final-message').textContent = 
         `Cảm ơn ${userName} đã công nhận sự thật! 💚`;
@@ -372,6 +334,10 @@
       
       // Ẩn các nút
       document.querySelector('.btn-container').style.display = 'none';
+      
+      // Hiển thị bảng kết quả
+      renderResults();
+      document.getElementById('results-section').style.display = 'block';
       
       // Cho phép thoát trang
       allowedToExit = true;
