@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anh Dũng có đẹp trai không?</title>
+  <style>
+    body {
+      background-color: #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      overflow: hidden;
+      user-select: none;
+    }
+    #meme {
+      width: 300px;
+      max-width: 90vw;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+    #question {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .buttons-container {
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      height: 60px;
+      margin: 0 auto;
+    }
+    #yesBtn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      height: 100%;
+      width: 100px;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1;
+      cursor: pointer;
+      position: absolute;
+      left: 0;
+    }
+    #noBtn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      font-weight: bold;
+      height: 100%;
+      width: 100px;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 2;
+      position: absolute;
+      right: 0;
+      cursor: pointer;
+    }
+    #final-message {
+      font-size: 28px;
+      font-weight: bold;
+      color: #4CAF50;
+      display: none;
+      margin-top: 20px;
+      animation: fadeIn 1s;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .alert-box {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 80%;
+      animation: shake 0.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+  </style>
+</head>
+<body>
+  <img id="meme" src="dung1/pikachu.jpg" alt="Anh Dũng" 
+       onerror="this.src='https://via.placeholder.com/300x400?text=Ảnh+lỗi'">
+  <h1 id="question">Anh Dũng có đẹp trai không?</h1>
+  
+  <div class="buttons-container">
+    <button id="yesBtn">CÓ</button>
+    <button id="noBtn">KHÔNG</button>
+  </div>
+  
+  <div id="final-message">CHUẨN CMNR! Anh Dũng tuyệt vời nhất vũ trụ 💚</div>
+
+  <div class="overlay" id="overlay">
+    <div class="alert-box">
+      <h2 style="color:#f44336;">🚫 KHÔNG ĐƯỢC THOÁT!</h2>
+      <p>Bạn <strong>PHẢI</strong> bấm nút <span style="color:#4CAF50;font-weight:bold">CÓ</span> mới thoát được!</p>
+      <button id="continueBtn" style="margin-top:15px;padding:10px 20px;background:#4CAF50;color:white;border:none;border-radius:5px;font-weight:bold;">
+        TIẾP TỤC
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ===== CẤU HÌNH ===== //
+    const memeLinks = [
+      "dung1/pikachu.jpg",    // Ảnh đầu tiên
+      "dung1/images.jpg",     // Ảnh khi bấm "KHÔNG" lần 1
+      "dung1/download.jpg",   // Ảnh khi bấm "KHÔNG" lần 2
+      "dung1/download(1).jpg", // ...
+      "dung1/download(2).jpg",
+      "dung1/download(3).jpg",
+      "dung1/download(4).jpg"  // Ảnh cuối cùng
+    ];
+    const noTexts = [
+      "M Chắc không?",
+      "M nói vậy là ý j",
+      "Nghĩ lại đi!",
+      "nói lại xem nào",
+      "Dũng đẹp trai mà!",
+      "Có ngay bên cạnh"
+    ];
+    
+    // ===== BIẾN ĐIỀU KHIỂN ===== //
+    let noCount = 0;
+    let yesWidth = 100;
+    const containerWidth = 400;
+    let allowedToExit = false;
+
+    // ===== CHẶN THOÁT TRANG ===== //
+    function blockExit() {
+      window.addEventListener('beforeunload', (e) => {
+        if (!allowedToExit) {
+          e.preventDefault();
+          e.returnValue = '';
+          showWarning();
+          return "Bạn PHẢI bấm nút CÓ!";
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (!allowedToExit && (
+          e.key === 'F12' || 
+          (e.ctrlKey && e.key === 'w') || 
+          (e.altKey && e.key === 'F4')
+        )) {
+          e.preventDefault();
+          showWarning();
+        }
+      });
+
+      document.addEventListener('contextmenu', (e) => {
+        if (!allowedToExit) {
+          e.preventDefault();
+          showWarning();
+        }
+      });
+
+      window.addEventListener('blur', () => {
+        if (!allowedToExit) window.focus();
+      });
+    }
+
+    // ===== HIỆU ỨNG CẢNH BÁO ===== //
+    function showWarning() {
+      const overlay = document.getElementById('overlay');
+      overlay.style.display = 'flex';
+      document.querySelector('.alert-box').style.animation = 'shake 0.5s';
+    }
+
+    // ===== XỬ LÝ NÚT BẤM ===== //
+    document.getElementById('noBtn').addEventListener('click', function() {
+      noCount++;
+      
+      // Thay đổi ảnh (giới hạn trong số ảnh có sẵn)
+      const imgIndex = Math.min(noCount, memeLinks.length - 1);
+      document.getElementById('meme').src = memeLinks[imgIndex];
+      this.textContent = noTexts[Math.min(noCount-1, noTexts.length-1)];
+      
+      // Phóng to nút CÓ
+      yesWidth = Math.min(containerWidth, yesWidth + 50);
+      document.getElementById('yesBtn').style.width = `${yesWidth}px`;
+      
+      // Đẩy nút KHÔNG sang phải
+      this.style.right = `${Math.max(0, containerWidth - yesWidth - 100)}px`;
+      
+      // Ẩn nút KHÔNG khi bị che hoàn toàn
+      if (yesWidth >= containerWidth) {
+        this.style.display = 'none';
+      }
+    });
+
+    document.getElementById('yesBtn').addEventListener('click', function() {
+      // Reset về ảnh đầu tiên
+      document.getElementById('meme').src = memeLinks[0];
+      allowedToExit = true;
+      document.getElementById('question').style.display = 'none';
+      document.querySelector('.buttons-container').style.display = 'none';
+      document.getElementById('final-message').style.display = 'block';
+      document.getElementById('meme').style.width = '90vw';
+      
+      // Đổi nội dung cảnh báo
+      document.querySelector('.alert-box').innerHTML = `
+        <h2 style="color:#4CAF50;">🎉 THÀNH CÔNG!</h2>
+        <p>Giờ bạn có thể thoát trang và phải công nhận anh Dũng đẹp trai</p>
+      `;
+    });
+
+    document.getElementById('continueBtn').addEventListener('click', function() {
+      document.getElementById('overlay').style.display = 'none';
+    });
+
+    // Khởi chạy
+    blockExit();
+  </script>
+</body>
+</html>
