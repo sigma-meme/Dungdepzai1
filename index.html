@@ -3,76 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>lần này là nhắc nhỏ nhỏ nhẹ!!!</title>
+  <title>nhắc nhỏ nhỏ nhẹ!!!</title>
   <style>
     /* === PHẦN NHẬP TÊN === */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+    }
+    
     #name-screen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 1000;
-      transition: all 0.6s ease;
     }
     
     .name-card {
       background: white;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 400px;
       text-align: center;
-      transform: scale(0.9);
-      opacity: 0;
-      animation: popIn 0.8s 0.3s forwards;
     }
     
-    @keyframes popIn {
-      0% { transform: scale(0.9); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    #name-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 16px;
+      box-sizing: border-box;
     }
     
-    /* === PHẦN CHÍNH === */
-    #game-screen {
+    #start-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.3s;
+    }
+    
+    #start-btn:hover {
+      background: #45a049;
+    }
+    
+    .warning {
+      color: #ff4444;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    
+    /* === PHẦN BÌNH CHỌN === */
+    #poll-screen {
       display: none;
-      max-width: 600px;
+      max-width: 500px;
       margin: 0 auto;
       padding: 20px;
-      opacity: 0;
-      transition: opacity 0.8s;
     }
     
     #meme {
-      width: 300px;
-      max-width: 90%;
-      border-radius: 15px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-      margin: 20px auto;
+      width: 100%;
+      max-width: 300px;
+      border-radius: 10px;
+      margin: 15px auto;
       display: block;
-      transition: transform 0.3s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
     .question {
-      font-size: 24px;
-      margin: 25px 0;
-      color: #333;
+      font-size: 22px;
       text-align: center;
+      margin: 20px 0;
+      color: #333;
     }
     
     /* === NÚT BẤM === */
     .btn-container {
       position: relative;
       width: 100%;
-      height: 70px;
+      height: 60px;
       background: #f0f0f0;
-      border-radius: 35px;
-      margin: 30px auto;
+      border-radius: 30px;
+      margin: 25px auto;
       overflow: hidden;
-      box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
     }
     
     #yesBtn {
@@ -80,14 +109,13 @@
       height: 100%;
       left: 0;
       width: 100px;
-      background: linear-gradient(to right, #4CAF50, #2E8B57);
+      background: #4CAF50;
       color: white;
       border: none;
-      font-size: 18px;
       font-weight: bold;
       cursor: pointer;
       z-index: 2;
-      transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: width 0.5s;
     }
     
     #noBtn {
@@ -95,55 +123,56 @@
       height: 100%;
       right: 0;
       width: 100px;
-      background: linear-gradient(to right, #f44336, #D32F2F);
+      background: #f44336;
       color: white;
       border: none;
-      font-size: 18px;
       font-weight: bold;
       cursor: pointer;
       z-index: 3;
-      transition: right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: right 0.5s;
     }
     
     /* === KẾT QUẢ === */
-    #results-section {
+    #results-screen {
       display: none;
-      margin-top: 40px;
-      animation: fadeIn 1s;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
     }
     
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    
-    #results {
+    #results-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      background: white;
       border-radius: 10px;
       overflow: hidden;
     }
     
-    #results th {
+    #results-table th {
       background: #4CAF50;
       color: white;
       padding: 12px;
       text-align: left;
     }
     
-    #results td {
+    #results-table td {
       padding: 12px;
       border-bottom: 1px solid #eee;
     }
     
-    #results tr:nth-child(even) {
+    #results-table tr:hover {
       background: #f9f9f9;
     }
     
-    #results tr:hover {
-      background: #f1f1f1;
+    .fb-link {
+      color: #1877f2;
+      text-decoration: none;
+    }
+    
+    .fb-link:hover {
+      text-decoration: underline;
     }
     
     /* === HIỆU ỨNG === */
@@ -157,20 +186,16 @@
       animation: shake 0.5s;
     }
     
-    .final-message {
-      font-size: 24px;
-      color: #4CAF50;
-      font-weight: bold;
-      text-align: center;
-      margin: 30px 0;
-      opacity: 0;
-      transform: scale(0.9);
-      transition: all 0.5s;
-    }
-    
-    .show {
-      opacity: 1 !important;
-      transform: none !important;
+    /* === RESPONSIVE === */
+    @media (max-width: 600px) {
+      .name-card, #poll-screen, #results-screen {
+        width: 95%;
+        padding: 15px;
+      }
+      
+      .question {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -178,86 +203,71 @@
   <!-- MÀN HÌNH NHẬP TÊN -->
   <div id="name-screen">
     <div class="name-card">
-      <h1>ghi tên mày vào đây !!</h1>
-      <input type="text" id="name-input" placeholder="Tên của bạn...">
-      <button id="start-btn" style="
-        background: linear-gradient(to right, #4CAF50, #2E8B57);
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        border-radius: 50px;
-        font-size: 16px;
-        margin-top: 20px;
-        cursor: pointer;
-        transition: all 0.3s;
-      ">Bắt đầu</button>
+      <h1>nhập tên m vào đây </h1>
+      <p class="warning"></p>
+      <input type="text" id="name-input" placeholder="Nhập tên của bạn...">
+      <button id="start-btn">Bắt đầu thử thách :>></button>
     </div>
   </div>
 
-  <!-- PHẦN CHÍNH -->
-  <div id="game-screen">
-    <img id="meme" src="dung1/pikachu.jpg" alt="Anh Dũng" onerror="this.src='https://via.placeholder.com/300x400?text=Ảnh+lỗi'">
+  <!-- PHẦN BÌNH CHỌN -->
+  <div id="poll-screen">
+    <img id="meme" src="https://i.imgur.com/f6xDKdN.jpeg" alt="Anh Dũng" onerror="this.src='https://via.placeholder.com/300x400?text=Ảnh+lỗi'">
     <h1 class="question">Anh Dũng có đẹp trai không?</h1>
     
     <div class="btn-container">
       <button id="yesBtn">CÓ</button>
       <button id="noBtn">KHÔNG</button>
     </div>
-    
-    <div class="final-message" id="final-message"></div>
-    
-    <!-- BẢNG KẾT QUẢ HIỆN TRÊN CÙNG TRANG -->
-    <div id="results-section">
-      <h2 style="text-align: center; color: #4CAF50;">📊 Kết quả bình chọn</h2>
-      <table id="results">
-        <thead>
-          <tr>
-            <th>STT</th>
-            <th>Tên</th>
-            <th>Đáp án</th>
-            <th>Thời gian</th>
-          </tr>
-        </thead>
-        <tbody id="results-body">
-          <!-- Dữ liệu sẽ được thêm bằng JS -->
-        </tbody>
-      </table>
-    </div>
+  </div>
+
+  <!-- MÀN HÌNH KẾT QUẢ (TRANG RIÊNG) -->
+  <div id="results-screen">
+    <h1 style="text-align: center; color: #4CAF50;">📊 Kết quả bình chọn</h1>
+    <table id="results-table">
+      <thead>
+        <tr>
+          <th>Tên</th>
+          <th>Đáp án</th>
+          <th>Facebook</th>
+        </tr>
+      </thead>
+      <tbody id="results-body">
+        <!-- Dữ liệu sẽ được thêm bằng JS -->
+      </tbody>
+    </table>
   </div>
 
   <script>
-    // ===== BIẾN TOÀN CỤC =====
+    // ===== CẤU HÌNH =====
     let userName = "";
+    let userFB = "Không có";
     let noCount = 0;
-    let allowedToExit = false;
     const memeLinks = [
-      "dung1/pikachu.jpg",
-      "dung1/images.jpg",
-      "dung1/download.jpg",
-      "dung1/download(1).jpg",
-      "dung1/download(2).jpg",
-      "dung1/download(3).jpg",
-      "dung1/download(4).jpg"
+      "https://i.imgur.com/f6xDKdN.jpeg",
+      "https://i.imgur.com/Y3AjJmh.jpeg",
+      "https://i.imgur.com/CPGZcZY.jpeg",
+      "https://i.imgur.com/XqQZQZQ.jpg"
     ];
     
     // Lưu trữ kết quả
     let allResults = JSON.parse(localStorage.getItem('dungPollResults')) || [];
 
-    // ===== KHỞI TẠO =====
-    function init() {
-      renderResults();
-      document.getElementById('name-input').focus();
-    }
-
-    // ===== CHẶN THOÁT TRANG =====
-    function blockExit() {
-      window.addEventListener('beforeunload', (e) => {
-        if (!allowedToExit) {
-          e.preventDefault();
-          e.returnValue = '';
-          return "M PHẢI bấm nút CÓ mới thoát được!";
+    // ===== TỰ ĐỘNG LẤY LINK FACEBOOK =====
+    function extractFacebookLink() {
+      // Kiểm tra nếu mở từ Messenger
+      const referrer = document.referrer;
+      if (referrer.includes("messenger.com") || referrer.includes("facebook.com")) {
+        try {
+          // Lấy thông tin từ URL (giả lập - thực tế cần tích hợp Messenger API)
+          const urlParams = new URLSearchParams(window.location.search);
+          const fbId = urlParams.get('fb_id') || Math.random().toString(36).substring(7);
+          userFB = `https://facebook.com/${fbId}`;
+          document.querySelector('.warning').textContent = "⚠️ Link Facebook của bạn sẽ được lưu cùng kết quả";
+        } catch (e) {
+          console.log("Không lấy được link Facebook");
         }
-      });
+      }
     }
 
     // ===== XỬ LÝ NHẬP TÊN =====
@@ -265,20 +275,14 @@
       userName = document.getElementById('name-input').value.trim();
       
       if (userName) {
-        // Ẩn màn hình nhập tên
-        document.getElementById('name-screen').style.opacity = '0';
-        document.getElementById('name-screen').style.pointerEvents = 'none';
+        extractFacebookLink(); // Thử lấy link Facebook
         
-        // Hiển thị game
-        setTimeout(() => {
-          document.getElementById('game-screen').style.display = 'block';
-          setTimeout(() => {
-            document.getElementById('game-screen').style.opacity = '1';
-            blockExit(); // Kích hoạt chặn thoát trang
-          }, 50);
-        }, 600);
+        // Ẩn màn hình nhập tên
+        document.getElementById('name-screen').style.display = 'none';
+        
+        // Hiển thị phần bình chọn
+        document.getElementById('poll-screen').style.display = 'block';
       } else {
-        // Hiệu ứng lắc nếu không nhập tên
         document.getElementById('name-input').classList.add('shake');
         setTimeout(() => {
           document.getElementById('name-input').classList.remove('shake');
@@ -297,10 +301,10 @@
       setTimeout(() => document.getElementById('meme').classList.remove('shake'), 500);
       
       // Thay đổi text nút KHÔNG
-      const texts = ["Chắc không?", "t cho m nói lại đấy", "Ngầu r đó", "Chắc chưa?", "nói thật đi"];
+      const texts = ["Chắc không?", "T cho m 3 s", "Nói lại xem nào", "thôi thật lòng đi", "Lần cuối!"];
       this.textContent = texts[Math.min(noCount-1, texts.length-1)] || "KHÔNG";
       
-      // Phóng to nút CÓ và đẩy nút KHÔNG
+      // Phóng to nút CÓ
       const containerWidth = document.querySelector('.btn-container').offsetWidth;
       const newWidth = Math.min(containerWidth - 20, 100 + (noCount * 40));
       document.getElementById('yesBtn').style.width = `${newWidth}px`;
@@ -317,30 +321,18 @@
 
     document.getElementById('yesBtn').addEventListener('click', function() {
       // Lưu kết quả
-      const newResult = {
-        id: Date.now(),
+      allResults.unshift({
         name: userName,
         answer: "CÓ",
+        facebook: userFB,
         timestamp: new Date().toLocaleString('vi-VN')
-      };
-      
-      allResults.unshift(newResult); // Thêm vào đầu mảng
+      });
       localStorage.setItem('dungPollResults', JSON.stringify(allResults));
       
-      // Hiển thị thông báo
-      document.getElementById('final-message').textContent = 
-        `😏😏 chính ${userName} đã công nhận sự thật! 💚`;
-      document.getElementById('final-message').classList.add('show');
-      
-      // Ẩn các nút
-      document.querySelector('.btn-container').style.display = 'none';
-      
-      // Hiển thị bảng kết quả
+      // Chuyển sang trang kết quả
+      document.getElementById('poll-screen').style.display = 'none';
+      document.getElementById('results-screen').style.display = 'block';
       renderResults();
-      document.getElementById('results-section').style.display = 'block';
-      
-      // Cho phép thoát trang
-      allowedToExit = true;
     });
 
     // ===== HIỂN THỊ KẾT QUẢ =====
@@ -350,18 +342,29 @@
       
       allResults.forEach((result, index) => {
         const row = document.createElement('tr');
+        const fbLink = result.facebook === "Không có" 
+          ? "Không có" 
+          : `<a href="${result.facebook}" class="fb-link" target="_blank">Xem profile</a>`;
+        
         row.innerHTML = `
-          <td>${index + 1}</td>
           <td>${result.name}</td>
           <td>${result.answer}</td>
-          <td>${result.timestamp}</td>
+          <td>${fbLink}</td>
         `;
         tbody.appendChild(row);
       });
     }
 
     // ===== KHỞI CHẠY =====
-    init();
+    // Hiển thị kết quả ngay nếu truy cập trực tiếp
+    if (window.location.href.includes('results')) {
+      document.getElementById('name-screen').style.display = 'none';
+      document.getElementById('poll-screen').style.display = 'none';
+      document.getElementById('results-screen').style.display = 'block';
+      renderResults();
+    } else {
+      extractFacebookLink();
+    }
   </script>
 </body>
 </html>
